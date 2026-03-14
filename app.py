@@ -1,40 +1,34 @@
-    import os, logging
-    from flask import Flask, jsonify, request
+import os, logging
+from flask import Flask, jsonify, request
 
-    logging.basicConfig(level=logging.INFO)
-    log = logging.getLogger(__name__)
+logging.basicConfig(level=logging.INFO)
+log = logging.getLogger(__name__)
 
-    API_KEY = os.getenv("API_KEY", "d7e5fe5d-0082-45b5-b60c-2bf4bb4df531")
+API_KEY = os.getenv("API_KEY", "f61a7e35-2c46-4f46-8fad-1608c0245758")
 
-    def create_app():
-        app = Flask(__name__)
+def create_app():
+    app = Flask(__name__)
 
-        @app.before_request
-        def _check_api_key():
-            if request.path in ("/api/health", "/health"):
-                return
-            key = request.headers.get("X-API-Key", "")
-            if key != API_KEY:
-                return jsonify({"error": "Invalid API key"}), 401
+    @app.before_request
+    def _check_api_key():
+        if request.path in ("/api/health", "/health"):
+            return
+        key = request.headers.get("X-API-Key", "")
+        if key != API_KEY:
+            return jsonify({"error": "Invalid API key"}), 401
 
-        from routes.prospects_routes import prospects_bp
-from routes.campagnes_routes import campagnes_bp
-from routes.offres_routes import offres_bp
-from routes.accords_routes import accords_bp
-from routes.dashboard_routes import dashboard_bp
-from routes.reports_routes import reports_bp
-        app.register_blueprint(prospects_bp, url_prefix="/api/prospects")
-app.register_blueprint(campagnes_bp, url_prefix="/api/campagnes")
-app.register_blueprint(offres_bp, url_prefix="/api/offres")
-app.register_blueprint(accords_bp, url_prefix="/api/accords")
-app.register_blueprint(dashboard_bp, url_prefix="/api/dashboard")
-app.register_blueprint(reports_bp, url_prefix="/api/reports")
+    from routes.clients_routes import clients_bp
+    from routes.contacts_routes import contacts_bp
+    from routes.adresses_routes import adresses_bp
+    app.register_blueprint(clients_bp, url_prefix="/api/clients")
+    app.register_blueprint(contacts_bp, url_prefix="/api/contacts")
+    app.register_blueprint(adresses_bp, url_prefix="/api/adresses")
 
-        @app.route("/api/health")
-        def health():
-            return jsonify({"status": "ok"})
+    @app.route("/api/health")
+    def health():
+        return jsonify({"status": "ok"})
 
-        return app
+    return app
 
-    if __name__ == "__main__":
-        create_app().run(host="0.0.0.0", port=5000)
+if __name__ == "__main__":
+    create_app().run(host="0.0.0.0", port=5000)
